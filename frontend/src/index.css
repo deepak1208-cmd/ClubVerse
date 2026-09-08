@@ -1,0 +1,160 @@
+:root {
+  --ink: #1B1F3B;
+  --ink-soft: rgba(27, 31, 59, 0.6);
+  --ink-faint: rgba(27, 31, 59, 0.08);
+  --paper: #FAF6EF;
+  --white: #FFFFFF;
+  --marigold: #F2A93B;
+  --teal: #1B7F79;
+  --coral: #E85D4E;
+  --purple: #7A6FD9;
+  --shadow-sm: 0 1px 2px rgba(27, 31, 59, 0.06);
+  --shadow-md: 0 4px 16px rgba(27, 31, 59, 0.08);
+  --shadow-lg: 0 12px 32px rgba(27, 31, 59, 0.14);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.serif { font-family: Georgia, "Times New Roman", serif; }
+
+a { color: inherit; text-decoration: none; }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+}
+button:active:not(:disabled) { transform: scale(0.97); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: 14px;
+}
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  border-radius: 9px;
+  padding: 11px 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.btn-primary:hover:not(:disabled) { box-shadow: var(--shadow-md); }
+
+.btn-secondary {
+  background: var(--white);
+  color: var(--ink);
+  border: 1px solid var(--ink-faint);
+  border-radius: 9px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.btn-secondary:hover:not(:disabled) { border-color: rgba(27,31,59,0.35); background: #fff; box-shadow: var(--shadow-sm); }
+
+.btn-teal {
+  background: var(--teal);
+  color: white;
+  border: none;
+  border-radius: 9px;
+  padding: 11px 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.btn-teal:hover:not(:disabled) { box-shadow: var(--shadow-md); }
+
+.btn-ghost {
+  background: transparent;
+  border: none;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+.btn-ghost:hover { background: var(--ink-faint); }
+
+/* ---------- Cards ---------- */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--ink-faint);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+a.card:hover, button.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: rgba(27,31,59,0.18);
+}
+
+/* ---------- Inputs ---------- */
+.input {
+  width: 100%;
+  border: 1px solid var(--ink-faint);
+  border-radius: 9px;
+  padding: 11px 14px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: var(--white);
+}
+.input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(27,127,121,0.12); }
+
+/* ---------- Animations ---------- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeInUp 0.35s ease both; }
+
+@keyframes shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--ink-faint) 0%, rgba(27,31,59,0.14) 50%, var(--ink-faint) 100%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(-8px) translateX(-50%); }
+  to { opacity: 1; transform: translateY(0) translateX(-50%); }
+}
+
+/* ---------- Badges / pills ---------- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: 99px;
+}
+
+/* ---------- Responsive helpers ---------- */
+.hide-mobile { display: initial; }
+.show-mobile { display: none; }
+
+@media (max-width: 760px) {
+  .hide-mobile { display: none !important; }
+  .show-mobile { display: initial !important; }
+  .responsive-grid { grid-template-columns: 1fr !important; }
+  .responsive-stats { grid-template-columns: repeat(2, 1fr) !important; }
+  .responsive-sidebar { display: none !important; }
+}

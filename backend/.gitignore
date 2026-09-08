@@ -1,0 +1,7 @@
+node_modules/
+.env
+src/db/clubverse.sqlite
+src/db/clubverse.sqlite-shm
+src/db/clubverse.sqlite-wal
+uploads/*
+!uploads/.gitkeep
