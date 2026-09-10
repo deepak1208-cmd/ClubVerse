@@ -11,7 +11,6 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Redirect authenticated users back to their previous destination and show login errors inline.
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
@@ -27,26 +26,94 @@ export default function Login() {
   }
 
   return (
-    <div style={{ maxWidth: 380, margin: "60px auto", padding: "0 20px" }}>
-      <p className="serif" style={{ fontSize: 26, marginBottom: 4 }}>Welcome back</p>
-      <p style={{ fontSize: 14, opacity: 0.6, marginBottom: 24 }}>Log in to RSVP and review events.</p>
+    <div style={{ 
+      minHeight: "100vh", 
+      display: "flex", 
+      alignItems: "center", 
+      justifyContent: "center",
+      padding: "20px",
+      background: "var(--bg-primary)"
+    }}>
+      <div className="card" style={{ maxWidth: 400, width: "100%", padding: 48 }}>
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8, color: "var(--text-primary)" }}>
+            Welcome back
+          </h1>
+          <p style={{ fontSize: 14, color: "var(--text-secondary)" }}>
+            Log in to RSVP and review events
+          </p>
+        </div>
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <input className="input" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input className="input" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        {error && <p style={{ color: "#E85D4E", fontSize: 13 }}>{error}</p>}
-        <button className="btn-primary" type="submit" disabled={loading} style={{ marginTop: 8 }}>
-          {loading ? "Logging in..." : "Log in"}
-        </button>
-      </form>
+        {/* Form */}
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 8, color: "var(--text-secondary)" }}>
+              Email Address
+            </label>
+            <input 
+              className="input" 
+              type="email" 
+              placeholder="you@poornima.edu.in" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+            />
+          </div>
 
-      <p style={{ fontSize: 13, opacity: 0.6, marginTop: 16 }}>
-        Don't have an account? <Link to="/signup" style={{ color: "#1B7F79", fontWeight: 600 }}>Sign up</Link>
-      </p>
+          <div>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 8, color: "var(--text-secondary)" }}>
+              Password
+            </label>
+            <input 
+              className="input" 
+              type="password" 
+              placeholder="Enter your password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+            />
+          </div>
 
-      {/* <div className="card" style={{ marginTop: 24, padding: 12, fontSize: 12, opacity: 0.6 }}>
-        Dean demo login: <b>dean@poornima.edu.in</b> / <b>changeme123</b> — change this password before real use.
-      </div> */}
+          {error && (
+            <div style={{ 
+              padding: "14px 18px", 
+              fontSize: 13, 
+              borderColor: "var(--error)", 
+              background: "var(--error-bg)",
+              color: "var(--error)",
+              borderRadius: 8
+            }}>
+              {error}
+            </div>
+          )}
+
+          <button 
+            className="btn-primary" 
+            type="submit" 
+            disabled={loading} 
+            style={{ marginTop: 8 }}
+          >
+            {loading ? "Logging in..." : "Log in"}
+          </button>
+        </form>
+
+        {/* Footer */}
+        <p style={{ 
+          fontSize: 14, 
+          textAlign: "center",
+          marginTop: 24,
+          color: "var(--text-secondary)"
+        }}>
+          Don't have an account?{" "}
+          <Link to="/signup" style={{ 
+            color: "var(--primary)", 
+            fontWeight: 600
+          }}>
+            Sign up
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
