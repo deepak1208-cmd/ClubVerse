@@ -46,20 +46,32 @@ export default function Header() {
         {/* Desktop nav */}
         <div className="hide-mobile" style={{ display: "flex", alignItems: "center", gap: 6 }}>
           {user?.role === "student" && (
-            <Link to="/my-events">
-              <button 
-                className={`btn-ghost ${isActive("/my-events") ? "active" : ""}`}
-                style={{ display: "flex", alignItems: "center", gap: 6 }}
-              >
-                <CalendarCheck size={16} />
-                My RSVPs
-              </button>
-            </Link>
+            <>
+              <Link to="/events">
+                <button 
+                  className={`btn-ghost ${isActive("/events") ? "active" : ""}`}
+                  style={{ display: "flex", alignItems: "center", gap: 6 }}
+                >
+                  <CalendarCheck size={16} />
+                  Events
+                </button>
+              </Link>
+              <Link to="/my-events">
+                <button 
+                  className={`btn-ghost ${isActive("/my-events") ? "active" : ""}`}
+                  style={{ display: "flex", alignItems: "center", gap: 6 }}
+                >
+                  <CalendarCheck size={16} />
+                  My RSVPs
+                </button>
+              </Link>
+            </>
           )}
           {user?.role === "dean" && (
             <>
               <Link to="/dashboard"><button className={`btn-ghost ${isActive("/dashboard") ? "active" : ""}`}>Dashboard</button></Link>
               <Link to="/manage-admins"><button className={`btn-ghost ${isActive("/manage-admins") ? "active" : ""}`}>Manage admins</button></Link>
+              <Link to="/events"><button className={`btn-ghost ${isActive("/events") ? "active" : ""}`}>Events</button></Link>
             </>
           )}
           {user?.role === "club_admin" && (
@@ -97,12 +109,16 @@ export default function Header() {
           borderTop: "1px solid var(--border-light)"
         }}>
           {user?.role === "student" && (
-            <Link to="/my-events" onClick={close}><button className="btn-secondary" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-start" }}><CalendarCheck size={16} /> My RSVPs</button></Link>
+            <>
+              <Link to="/events" onClick={close}><button className="btn-secondary" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-start" }}><CalendarCheck size={16} /> Events</button></Link>
+              <Link to="/my-events" onClick={close}><button className="btn-secondary" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-start" }}><CalendarCheck size={16} /> My RSVPs</button></Link>
+            </>
           )}
           {user?.role === "dean" && (
             <>
               <Link to="/dashboard" onClick={close}><button className="btn-secondary" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-start" }}><LayoutDashboard size={16} /> Dashboard</button></Link>
               <Link to="/manage-admins" onClick={close}><button className="btn-secondary" style={{ width: "100%" }}>Manage admins</button></Link>
+              <Link to="/events" onClick={close}><button className="btn-secondary" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-start" }}><CalendarCheck size={16} /> Events</button></Link>
             </>
           )}
           {user?.role === "club_admin" && (

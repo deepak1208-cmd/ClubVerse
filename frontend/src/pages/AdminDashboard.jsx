@@ -4,6 +4,7 @@ import { Calendar, Users, Star, PlusCircle, Settings, MessageSquare, CheckCircle
 import { api } from "../api";
 import { useAuth } from "../AuthContext";
 import EmptyState from "../components/EmptyState";
+import EventFeed from "../components/EventFeed";
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -21,7 +22,17 @@ export default function AdminDashboard() {
   const totalAttending = events?.reduce((s, e) => s + e.attending, 0) ?? 0;
 
   return (
-    <div style={{ maxWidth: 800, margin: "0 auto", padding: "24px 20px" }}>
+    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 20px" }}>
+      {/* Page Header */}
+      <div style={{ marginBottom: 32 }}>
+        <h1 className="section-title" style={{ fontSize: 28, fontWeight: 700, color: '#101828', marginBottom: 8 }}>
+          Club Administration
+        </h1>
+        <p style={{ fontSize: 14, color: '#64748B', maxWidth: 600 }}>
+          Manage your club's events and view campus-wide activity.
+        </p>
+      </div>
+
       {/* This banner is what makes the admin view feel distinct from the student
           feed and the dean dashboard — it's scoped and branded to THIS club. */}
       <div
@@ -107,6 +118,17 @@ export default function AdminDashboard() {
           ))}
         </div>
       )}
+
+      {/* Campus-wide Events Feed - Now visible for Club Admin */}
+      <div style={{ marginTop: 40, paddingTop: 32, borderTop: '1px solid #E2E8F0' }}>
+        <h2 style={{ fontSize: 20, fontWeight: 600, color: '#101828', marginBottom: 8 }}>
+          Campus Events
+        </h2>
+        <p style={{ fontSize: 14, color: '#64748B', marginBottom: 24 }}>
+          Browse all upcoming events across campus clubs.
+        </p>
+        <EventFeed />
+      </div>
     </div>
   );
 }
