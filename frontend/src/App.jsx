@@ -8,7 +8,7 @@ import Feed from "./pages/Feed";
 import EventDetail from "./pages/EventDetail";
 import ClubDetail from "./pages/ClubDetail";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import SignupPage from "./pages/SignupPage";
 import DeanDashboard from "./pages/DeanDashboard";
 import ManageAdmins from "./pages/ManageAdmins";
 import PostEvent from "./pages/PostEvent";
@@ -29,7 +29,7 @@ export default function App() {
             <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/clubs/:id" element={<ClubDetail />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route path="/signup" element={<SignupPage />} />
 
             <Route path="/my-events" element={<ProtectedRoute role="student"><MyEvents /></ProtectedRoute>} />
 
