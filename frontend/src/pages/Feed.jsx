@@ -7,7 +7,7 @@ import { EventGridSkeleton } from "../components/Skeletons";
 import EmptyState from "../components/EmptyState";
 
 export default function Feed() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [committees, setCommittees] = useState([]);
   const [events, setEvents] = useState([]);
@@ -16,6 +16,19 @@ export default function Feed() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   
+  // Redirect logged-in users to their dashboard
+  useEffect(() => {
+    if (!authLoading && user) {
+      if (user.role === 'dean') {
+        navigate('/dashboard');
+      } else if (user.role === 'club_admin') {
+        navigate('/admin');
+      } else if (user.role === 'student') {
+        navigate('/my-events');
+      }
+    }
+  }, [user, authLoading, navigate]);
+
   useEffect(() => {
     api.getCommittees().then(setCommittees).catch((e) => setError(e.message));
   }, []);
@@ -33,9 +46,8 @@ export default function Feed() {
     return () => clearTimeout(timeout);
   }, [activeClub, query]);
 
-  // Get unique clubs for discovery strip
+  // Get ALL clubs for directory (not just first 6)
   const allClubs = committees.flatMap(c => c.clubs);
-  const featuredClubs = allClubs.slice(0, 6);
 
   return (
     <div className="feed-page">
@@ -90,14 +102,14 @@ export default function Feed() {
         </div>
       </section>
 
-      {/* Club Discovery Strip */}
+      {/* Club Discovery Strip - ALL CLUBS */}
       <section id="clubs-section" className="clubs-section">
         <div className="section-header">
           <h2 className="section-title">Explore Clubs</h2>
           <p className="section-subtitle">Find your community among our diverse student organizations</p>
         </div>
         <div className="clubs-grid">
-          {featuredClubs.map((club, idx) => {
+          {allClubs.map((club, idx) => {
             const committee = committees.find(c => c.clubs.some(cl => cl.id === club.id));
             return (
               <button
