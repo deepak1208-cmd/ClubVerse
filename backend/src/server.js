@@ -48,8 +48,8 @@ const PORT = process.env.PORT || 4000;
 // assume the database is already ready the moment a request comes in.
 async function main() {
   await db.init();
-  app.listen(PORT, () => {
-    console.log(`ClubVerse API running on http://localhost:${PORT}`);
+  app.listen(PORT, "0.0.0.0" , () => {
+    console.log(`ClubVerse API running on port ${PORT}`);
   });
 }
 
