@@ -33,7 +33,7 @@ export default function App() {
             <Route path="/signup" element={<Signup />} />
 
             {/* Student routes - Events is now default */}
-            <Route path="/events" element={<ProtectedRoute role="student"><EventFeed /></ProtectedRoute>} />
+            <Route path="/events" element={<ProtectedRoute role={["student", "club_admin", "dean"]}><EventFeed /></ProtectedRoute>} />
             <Route path="/my-events" element={<ProtectedRoute role="student"><MyEvents /></ProtectedRoute>} />
 
             {/* Club admin routes */}
