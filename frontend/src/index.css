@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 :root {
   --ink: #1B1F3B;
   --ink-soft: rgba(27, 31, 59, 0.6);
