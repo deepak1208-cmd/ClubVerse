@@ -11,6 +11,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Redirect authenticated users back to their previous destination and show login errors inline.
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
@@ -43,9 +44,9 @@ export default function Login() {
         Don't have an account? <Link to="/signup" style={{ color: "#1B7F79", fontWeight: 600 }}>Sign up</Link>
       </p>
 
-      <div className="card" style={{ marginTop: 24, padding: 12, fontSize: 12, opacity: 0.6 }}>
+      {/* <div className="card" style={{ marginTop: 24, padding: 12, fontSize: 12, opacity: 0.6 }}>
         Dean demo login: <b>dean@poornima.edu.in</b> / <b>changeme123</b> — change this password before real use.
-      </div>
+      </div> */}
     </div>
   );
 }
