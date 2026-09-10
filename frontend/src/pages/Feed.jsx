@@ -24,7 +24,7 @@ export default function Feed() {
       } else if (user.role === 'club_admin') {
         navigate('/admin');
       } else if (user.role === 'student') {
-        navigate('/my-events');
+        navigate('/events'); // Changed from /my-events to /events
       }
     }
   }, [user, authLoading, navigate]);

@@ -17,6 +17,7 @@ import Participants from "./pages/Participants";
 import AdminDashboard from "./pages/AdminDashboard";
 import MyEvents from "./pages/MyEvents";
 import NotFound from "./pages/NotFound";
+import EventFeed from "./components/EventFeed";
 
 export default function App() {
   return (
@@ -31,13 +32,17 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
 
+            {/* Student routes - Events is now default */}
+            <Route path="/events" element={<ProtectedRoute role="student"><EventFeed /></ProtectedRoute>} />
             <Route path="/my-events" element={<ProtectedRoute role="student"><MyEvents /></ProtectedRoute>} />
 
+            {/* Club admin routes */}
             <Route path="/admin" element={<ProtectedRoute role="club_admin"><AdminDashboard /></ProtectedRoute>} />
             <Route path="/post-event" element={<ProtectedRoute role="club_admin"><PostEvent /></ProtectedRoute>} />
             <Route path="/events/:id/edit" element={<ProtectedRoute role={["club_admin", "dean"]}><EditEvent /></ProtectedRoute>} />
             <Route path="/events/:id/participants" element={<ProtectedRoute role={["club_admin", "dean"]}><Participants /></ProtectedRoute>} />
 
+            {/* Dean routes */}
             <Route path="/dashboard" element={<ProtectedRoute role="dean"><DeanDashboard /></ProtectedRoute>} />
             <Route path="/manage-admins" element={<ProtectedRoute role="dean"><ManageAdmins /></ProtectedRoute>} />
 
