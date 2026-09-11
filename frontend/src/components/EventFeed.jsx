@@ -1,166 +1,141 @@
-import React from "react";
-import { Calendar, Clock, MapPin, Users } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Search, Calendar, Users, Star, CalendarX2 } from "lucide-react";
+import { api } from "../api";
+import { EventGridSkeleton } from "./Skeletons";
+import EmptyState from "./EmptyState";
 
-export default function EventCard({ event, onRSVP }) {
-  // Format date to readable format
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  };
+export default function EventFeed({ activeClubFilter = null }) {
+  const [committees, setCommittees] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [activeClub, setActiveClub] = useState(activeClubFilter);
+  const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Format time to 12-hour format with AM/PM
-  const formatTime = (timeString) => {
-    if (!timeString) return null;
-    const [hours, minutes] = timeString.split(":");
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? "PM" : "AM";
-    const hour12 = hour % 12 || 12;
-    return `${hour12}:${minutes} ${ampm}`;
-  };
+  useEffect(() => {
+    api.getCommittees().then(setCommittees).catch((e) => setError(e.message));
+  }, []);
 
-  const startTime = formatTime(event.start_time);
-  const endTime = formatTime(event.end_time);
-  const timeDisplay = startTime ? (endTime ? `${startTime} - ${endTime}` : startTime) : null;
+  useEffect(() => {
+    setLoading(true);
+    const params = {};
+    if (activeClub) params.club = activeClub.id;
+    if (query) params.search = query;
+
+    const timeout = setTimeout(() => {
+      api.getEvents(params).then(setEvents).catch((e) => setError(e.message)).finally(() => setLoading(false));
+    }, 250);
+
+    return () => clearTimeout(timeout);
+  }, [activeClub, query]);
 
   return (
-    <div style={{
-      background: "#fff",
-      borderRadius: 16,
-      overflow: "hidden",
-      boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-      transition: "transform 0.2s, box-shadow 0.2s",
-      cursor: "pointer",
-    }}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.transform = "translateY(-4px)";
-      e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.12)";
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.transform = "translateY(0)";
-      e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.06)";
-    }}
-    >
-      {/* Media */}
-      {event.media_url ? (
-        <div style={{
-          height: 200,
-          background: "var(--bg-secondary)",
-          overflow: "hidden",
-        }}>
-          {event.media_url.endsWith(".mp4") || event.media_url.endsWith(".webm") ? (
-            <video
-              src={event.media_url}
-              controls
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          ) : (
-            <img
-              src={event.media_url}
-              alt={event.title}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          )}
-        </div>
-      ) : (
-        <div style={{
-          height: 200,
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}>
-          <Calendar size={48} color="rgba(255,255,255,0.3)" />
-        </div>
-      )}
+    <div className="events-section">
+      <div className="events-layout">
+        {/* Sidebar - Club Filters */}
+        <aside className="events-sidebar">
+          <div className="sidebar-header">
+            <h3>Filter by Club</h3>
+          </div>
+          <button
+            onClick={() => setActiveClub(null)}
+            className={`filter-btn ${!activeClub ? 'active' : ''}`}
+          >
+            All clubs
+          </button>
+          {committees.map((committee) => (
+            <div key={committee.id} className="committee-group">
+              <p className="committee-label">{committee.name}</p>
+              {committee.clubs.map((club) => {
+                const isActive = activeClub?.id === club.id;
+                return (
+                  <button
+                    key={club.id}
+                    onClick={() => setActiveClub(club)}
+                    className={`filter-btn ${isActive ? 'active' : ''}`}
+                  >
+                    <span 
+                      className="club-dot"
+                      style={{ background: committee.color }}
+                    />
+                    {club.name}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </aside>
 
-      {/* Content */}
-      <div style={{ padding: 20 }}>
-        {/* Club Badge */}
-        <span style={{
-          fontSize: 12,
-          fontWeight: 600,
-          color: "var(--primary)",
-          textTransform: "uppercase",
-          letterSpacing: "0.5px",
-        }}>
-          {event.club}
-        </span>
-
-        {/* Title */}
-        <h3 style={{
-          fontSize: 18,
-          fontWeight: 700,
-          color: "var(--text-primary)",
-          margin: "8px 0",
-          lineHeight: 1.3,
-        }}>
-          {event.title}
-        </h3>
-
-        {/* Details */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 12 }}>
-          {/* Date & Time */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--text-secondary)" }}>
-            <Calendar size={14} />
-            <span>{formatDate(event.date)}</span>
-            {timeDisplay && (
-              <>
-                <span style={{ margin: "0 4px" }}>•</span>
-                <Clock size={14} />
-                <span>{timeDisplay}</span>
-              </>
-            )}
+        {/* Events Grid */}
+        <div className="events-content">
+          <div className="events-header">
+            <div>
+              <h2 className="events-title">Upcoming Events</h2>
+              <p className="events-subtitle">
+                {activeClub 
+                  ? `Showing events from ${activeClub.name}`
+                  : 'Browse all upcoming campus events'}
+              </p>
+            </div>
+            <div className="search-container">
+              <Search size={18} className="search-icon" />
+              <input
+                className="search-input"
+                placeholder="Search events..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
           </div>
 
-          {/* Venue */}
-          {event.venue && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--text-secondary)" }}>
-              <MapPin size={14} />
-              <span>{event.venue}</span>
+          {error && (
+            <div className="error-message">
+              <p>{error}</p>
             </div>
           )}
 
-          {/* Eligibility & Capacity */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--text-secondary)" }}>
-            <Users size={14} />
-            <span>{event.eligibility}</span>
-            {event.max_participants && (
-              <>
-                <span style={{ margin: "0 4px" }}>•</span>
-                <span>Max {event.max_participants} participants</span>
-              </>
-            )}
-          </div>
+          {loading ? (
+            <EventGridSkeleton />
+          ) : events.length === 0 ? (
+            <EmptyState
+              icon={CalendarX2}
+              title="No events found"
+              subtitle={activeClub ? `${activeClub.name} hasn't posted any events yet.` : "Try adjusting your search or filter."}
+            />
+          ) : (
+            <div className="events-grid">
+              {events.map((ev) => (
+                <Link
+                  key={ev.id}
+                  to={`/events/${ev.id}`}
+                  className="event-card"
+                >
+                  <div className="event-tag" style={{ background: `${ev.tag_color}15`, color: ev.tag_color }}>
+                    {ev.club_name}
+                  </div>
+                  <h3 className="event-title">{ev.title}</h3>
+                  <div className="event-meta">
+                    <span className="meta-item">
+                      <Calendar size={14} />
+                      {ev.event_date}
+                    </span>
+                    <span className="meta-item">
+                      <Users size={14} />
+                      {ev.attending} attending
+                    </span>
+                    {ev.avg_rating && (
+                      <span className="meta-item">
+                        <Star size={14} />
+                        {ev.avg_rating}
+                      </span>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
-
-        {/* RSVP Button */}
-        {onRSVP && (
-          <button
-            onClick={() => onRSVP(event)}
-            style={{
-              width: "100%",
-              marginTop: 16,
-              padding: "10px 16px",
-              fontSize: 14,
-              fontWeight: 600,
-              color: "#fff",
-              background: "var(--primary)",
-              border: "none",
-              borderRadius: 8,
-              cursor: "pointer",
-              transition: "background 0.2s",
-            }}
-            onMouseEnter={(e) => (e.target.style.background = "var(--primary-dark)")}
-            onMouseLeave={(e) => (e.target.style.background = "var(--primary)")}
-          >
-            RSVP Now
-          </button>
-        )}
       </div>
     </div>
   );
