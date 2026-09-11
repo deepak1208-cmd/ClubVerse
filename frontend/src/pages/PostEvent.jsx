@@ -179,10 +179,10 @@ export default function PostEvent() {
             />
           </div>
 
-          {/* Date and Time Row */}
+          {/* Date and Time Row - Desktop: side-by-side, Mobile: stacked */}
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+            gridTemplateColumns: "repeat(2, 1fr)",
             gap: 16,
           }}>
             {/* Date */}
@@ -193,7 +193,10 @@ export default function PostEvent() {
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
-                style={inputStyle}
+                style={{
+                  ...inputStyle,
+                  minHeight: "44px",
+                }}
                 required
               />
             </div>
@@ -206,23 +209,29 @@ export default function PostEvent() {
                 name="startTime"
                 value={formData.startTime}
                 onChange={handleChange}
-                style={inputStyle}
+                style={{
+                  ...inputStyle,
+                  minHeight: "44px",
+                }}
                 required
               />
             </div>
+          </div>
 
-            {/* End Time */}
-            <div>
-              <label style={labelStyle}>End Time (Optional)</label>
-              <input
-                type="time"
-                name="endTime"
-                value={formData.endTime}
-                onChange={handleChange}
-                style={inputStyle}
-                placeholder="Optional"
-              />
-            </div>
+          {/* End Time - Full width below the date/start-time row */}
+          <div>
+            <label style={labelStyle}>End Time (Optional)</label>
+            <input
+              type="time"
+              name="endTime"
+              value={formData.endTime}
+              onChange={handleChange}
+              style={{
+                ...inputStyle,
+                minHeight: "44px",
+              }}
+              placeholder="Optional"
+            />
           </div>
 
           {/* Multi-day checkbox */}
@@ -411,6 +420,14 @@ const inputStyle = {
   outline: "none",
   transition: "all 0.2s",
   boxSizing: "border-box",
+  minHeight: "44px",
+};
+
+// Focus ring style using ClubVerse forest green primary color
+const inputFocusStyle = {
+  ...inputStyle,
+  borderColor: "#174C3C",
+  boxShadow: "0 0 0 2px #174C3C",
 };
 
 const buttonStyle = {
