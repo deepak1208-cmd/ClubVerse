@@ -940,6 +940,19 @@ label {
   }
 }
 
+/* Dashboard Grid - Responsive two-column layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 380px;
+  }
+}
+
 .events-title {
   font-size: 24px;
   font-weight: 600;
