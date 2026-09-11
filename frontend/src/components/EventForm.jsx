@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const emptyForm = {
-  title: "", venue: "", event_date: "", end_date: "", description: "",
+  title: "", venue: "", event_date: "", end_date: "", start_time: "", end_time: "", description: "",
   eligibility: "", max_participants: "", format_details: "", why_participate: "",
   contact_name: "", contact_role: "", contact_phone: "", contact_email: "", winners: "",
   start_time: "", end_time: "",
@@ -25,6 +25,8 @@ export default function EventForm({ initialValues, onSubmit, submitLabel, loadin
     onSubmit({
       ...form,
       end_date: isMultiDay ? form.end_date || null : null,
+      start_time: form.start_time || null,
+      end_time: form.end_time || null,
       max_participants: form.max_participants ? Number(form.max_participants) : null,
       start_time: form.start_time || null,
       end_time: form.end_time || null,

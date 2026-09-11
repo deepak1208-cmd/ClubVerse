@@ -4,6 +4,7 @@ import { Search, Calendar, Clock, Users, Star, CalendarX2, MapPin } from "lucide
 import { api } from "../api";
 import { EventGridSkeleton } from "./Skeletons";
 import EmptyState from "./EmptyState";
+import { formatDate, formatTime } from "../utils/timeFormat";
 
 export default function EventFeed({ activeClubFilter = null }) {
   const [committees, setCommittees] = useState([]);
@@ -32,27 +33,6 @@ export default function EventFeed({ activeClubFilter = null }) {
 
     return () => clearTimeout(timeout);
   }, [activeClub, query]);
-
-  // Helper to format date (e.g., "17 Sept 2025")
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  };
-
-  // Helper to format time (e.g., "10:00 AM")
-  const formatTime = (timeString) => {
-    if (!timeString) return null;
-    const [hours, minutes] = timeString.split(":");
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? "PM" : "AM";
-    const hour12 = hour % 12 || 12;
-    return `${hour12}:${minutes} ${ampm}`;
-  };
 
   return (
     <div className="events-section">
