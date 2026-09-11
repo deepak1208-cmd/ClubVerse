@@ -1,27 +1,22 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../AuthContext";
-import EmptyState from "./EmptyState";
-import { ShieldAlert } from "lucide-react";
 
-// role: optional string or array of allowed roles. If omitted, just requires any login.
-export default function ProtectedRoute({ children, role }) {
-  const { user } = useAuth();
+export default function ProtectedRoute({ children, allowedRoles }) {
+  const { user, loading } = useAuth();
   const location = useLocation();
 
-  if (!user) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
 
-  const allowed = !role || (Array.isArray(role) ? role.includes(user.role) : user.role === role);
-  if (!allowed) {
-    return (
-      <EmptyState
-        icon={ShieldAlert}
-        title="You don't have access to this page"
-        subtitle={`This page is only available to ${Array.isArray(role) ? role.join(" or ") : role} accounts.`}
-      />
-    );
+  if (!allowedRoles.includes(user.role)) {
+    // AUTOMATIC REDIRECT BASED ON ROLE
+    if (user.role === "student") return <Navigate to="/events" replace />;
+    if (user.role === "dean") return <Navigate to="/dashboard" replace />;
+    if (user.role === "club_admin") return <Navigate to="/admin" replace />;
+    
+    // Fallback redirect
+    return <Navigate to="/" replace />;
   }
 
   return children;
