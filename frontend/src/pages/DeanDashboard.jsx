@@ -74,8 +74,12 @@ export default function DeanDashboard() {
         ))}
       </div>
 
-      {/* Main Workspace - Two Column Layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24 }}>
+      {/* Main Workspace - Two Column Layout (stacks on mobile) */}
+      <div className="dashboard-grid" style={{ 
+        display: 'grid', 
+        gridTemplateColumns: '1fr', 
+        gap: 24,
+      }}>
         {/* Left Column - Committee Activity */}
         <div className="card" style={{ padding: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
