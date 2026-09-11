@@ -177,11 +177,53 @@ export default function EventDetail() {
           <p style={{ fontSize: 15, fontWeight: 600, marginBottom: 10 }}>Photos & videos</p>
           <div className="responsive-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
             {event.media.map((m) => (
-              <div key={m.id} style={{ borderRadius: 10, overflow: "hidden", aspectRatio: "1", background: "#00000010" }}>
+              <div 
+                key={m.id} 
+                style={{ borderRadius: 10, overflow: "hidden", aspectRatio: "1", background: "#00000010", cursor: "pointer" }}
+                onClick={() => {
+                  const mediaUrl = `${SERVER_ROOT}${m.url}`;
+                  if (m.media_type === "video") {
+                    const video = document.createElement("video");
+                    video.src = mediaUrl;
+                    video.controls = true;
+                    video.style.cssText = "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 90vw; max-height: 90vh; z-index: 9999; background: #000;";
+                    document.body.appendChild(video);
+                    video.play();
+                    video.onclick = () => {
+                      video.pause();
+                      video.remove();
+                    };
+                    const overlay = document.createElement("div");
+                    overlay.style.cssText = "position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 9998;";
+                    overlay.onclick = () => {
+                      video.pause();
+                      video.remove();
+                      overlay.remove();
+                    };
+                    document.body.appendChild(overlay);
+                  } else {
+                    const img = document.createElement("img");
+                    img.src = mediaUrl;
+                    img.onerror = () => {
+                      alert("Failed to load image");
+                      overlay.remove();
+                    };
+                    img.style.cssText = "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 90vw; max-height: 90vh; z-index: 9999;";
+                    document.body.appendChild(img);
+                    const overlay = document.createElement("div");
+                    overlay.style.cssText = "position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 9998;";
+                    overlay.onclick = () => {
+                      img.remove();
+                      overlay.remove();
+                    };
+                    document.body.appendChild(overlay);
+                  }
+                }}
+              >
                 {m.media_type === "video" ? (
-                  <video src={`${SERVER_ROOT}${m.url}`} controls style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <video src={`${SERVER_ROOT}${m.url}`} controls style={{ width: "100%", height: "100%", objectFit: "cover" }} muted />
                 ) : (
-                  <img src={`${SERVER_ROOT}${m.url}`} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img src={`${SERVER_ROOT}${m.url}`} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML += '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#666;font-size:12px;">Failed to load</div>'; }} />
                 )}
               </div>
             ))}
