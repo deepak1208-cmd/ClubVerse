@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const emptyForm = {
-  title: "", venue: "", event_date: "", end_date: "", description: "",
+  title: "", venue: "", event_date: "", end_date: "", start_time: "", end_time: "", description: "",
   eligibility: "", max_participants: "", format_details: "", why_participate: "",
   contact_name: "", contact_role: "", contact_phone: "", contact_email: "", winners: "",
 };
@@ -19,6 +19,8 @@ export default function EventForm({ initialValues, onSubmit, submitLabel, loadin
     onSubmit({
       ...form,
       end_date: isMultiDay ? form.end_date || null : null,
+      start_time: form.start_time || null,
+      end_time: form.end_time || null,
       max_participants: form.max_participants ? Number(form.max_participants) : null,
     });
   }
@@ -42,6 +44,18 @@ export default function EventForm({ initialValues, onSubmit, submitLabel, loadin
             <input className="input" type="date" value={form.end_date} onChange={set("end_date")} />
           </div>
         )}
+      </div>
+      
+      {/* Start Time and End Time inputs */}
+      <div style={row}>
+        <div style={{ flex: 1 }}>
+          <label style={{ fontSize: 12, opacity: 0.6 }}>Start Time</label>
+          <input className="input" type="time" value={form.start_time} onChange={set("start_time")} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <label style={{ fontSize: 12, opacity: 0.6 }}>End Time</label>
+          <input className="input" type="time" value={form.end_time} onChange={set("end_time")} />
+        </div>
       </div>
       <label style={{ fontSize: 13, display: "flex", alignItems: "center", gap: 6, opacity: 0.75 }}>
         <input type="checkbox" checked={isMultiDay} onChange={(e) => setIsMultiDay(e.target.checked)} />
