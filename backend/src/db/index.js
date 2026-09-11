@@ -228,6 +228,8 @@ const NEW_EVENT_COLUMNS = [
   "contact_role TEXT",
   "contact_phone TEXT",
   "contact_email TEXT",
+  "start_time TEXT",
+  "end_time TEXT",
 ];
 
 function migrateExistingEventsTable() {

@@ -4,6 +4,7 @@ const emptyForm = {
   title: "", venue: "", event_date: "", end_date: "", description: "",
   eligibility: "", max_participants: "", format_details: "", why_participate: "",
   contact_name: "", contact_role: "", contact_phone: "", contact_email: "", winners: "",
+  start_time: "", end_time: "",
 };
 
 export default function EventForm({ initialValues, onSubmit, submitLabel, loading }) {
@@ -16,10 +17,17 @@ export default function EventForm({ initialValues, onSubmit, submitLabel, loadin
 
   function handleSubmit(e) {
     e.preventDefault();
+    // Validate time range if both provided
+    if (form.start_time && form.end_time && form.start_time >= form.end_time) {
+      alert("End time must be after start time");
+      return;
+    }
     onSubmit({
       ...form,
       end_date: isMultiDay ? form.end_date || null : null,
       max_participants: form.max_participants ? Number(form.max_participants) : null,
+      start_time: form.start_time || null,
+      end_time: form.end_time || null,
     });
   }
 
@@ -42,6 +50,17 @@ export default function EventForm({ initialValues, onSubmit, submitLabel, loadin
             <input className="input" type="date" value={form.end_date} onChange={set("end_date")} />
           </div>
         )}
+      </div>
+      {/* Time inputs - Start and End Time */}
+      <div style={row}>
+        <div style={{ flex: 1 }}>
+          <label style={{ fontSize: 12, opacity: 0.6 }}>Start Time (optional)</label>
+          <input className="input" type="time" value={form.start_time} onChange={set("start_time")} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <label style={{ fontSize: 12, opacity: 0.6 }}>End Time (optional)</label>
+          <input className="input" type="time" value={form.end_time} onChange={set("end_time")} />
+        </div>
       </div>
       <label style={{ fontSize: 13, display: "flex", alignItems: "center", gap: 6, opacity: 0.75 }}>
         <input type="checkbox" checked={isMultiDay} onChange={(e) => setIsMultiDay(e.target.checked)} />

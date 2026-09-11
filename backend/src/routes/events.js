@@ -171,10 +171,16 @@ router.post("/", requireAuth, requireRole("club_admin"), (req, res) => {
   const {
     title, description, event_date, end_date, venue, eligibility, max_participants,
     format_details, why_participate, contact_name, contact_role, contact_phone, contact_email, winners,
+    start_time, end_time,
   } = req.body;
 
   if (!title || !event_date) {
     return res.status(400).json({ error: "title and event_date are required" });
+  }
+
+  // Validate time range if both provided
+  if (start_time && end_time && start_time >= end_time) {
+    return res.status(400).json({ error: "end_time must be after start_time" });
   }
 
   const info = db
@@ -182,14 +188,14 @@ router.post("/", requireAuth, requireRole("club_admin"), (req, res) => {
       `INSERT INTO events (
         club_id, title, description, event_date, end_date, venue, eligibility, max_participants,
         format_details, why_participate, contact_name, contact_role, contact_phone, contact_email,
-        winners, created_by
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        winners, created_by, start_time, end_time
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
     .run(
       req.user.club_id, title, description || null, event_date, end_date || null, venue || null,
       eligibility || null, max_participants || null, format_details || null, why_participate || null,
       contact_name || null, contact_role || null, contact_phone || null, contact_email || null,
-      winners || null, req.user.id
+      winners || null, req.user.id, start_time || null, end_time || null
     );
 
   res.status(201).json({ id: info.lastInsertRowid });
@@ -206,7 +212,13 @@ router.patch("/:id", requireAuth, requireRole("club_admin", "dean"), (req, res) 
   const {
     title, description, event_date, end_date, venue, eligibility, max_participants,
     format_details, why_participate, contact_name, contact_role, contact_phone, contact_email, winners,
+    start_time, end_time: req_end_time,
   } = req.body;
+
+  // Validate time range if both provided
+  if (start_time && req_end_time && start_time >= req_end_time) {
+    return res.status(400).json({ error: "end_time must be after start_time" });
+  }
 
   db.prepare(
     `UPDATE events SET
@@ -223,11 +235,14 @@ router.patch("/:id", requireAuth, requireRole("club_admin", "dean"), (req, res) 
       contact_role = COALESCE(?, contact_role),
       contact_phone = COALESCE(?, contact_phone),
       contact_email = COALESCE(?, contact_email),
-      winners = COALESCE(?, winners)
+      winners = COALESCE(?, winners),
+      start_time = ?,
+      end_time = ?
      WHERE id = ?`
   ).run(
     title, description, event_date, end_date, venue, eligibility, max_participants, format_details,
-    why_participate, contact_name, contact_role, contact_phone, contact_email, winners, req.params.id
+    why_participate, contact_name, contact_role, contact_phone, contact_email, winners,
+    start_time || null, req_end_time || null, req.params.id
   );
 
   res.json({ message: "Updated" });
