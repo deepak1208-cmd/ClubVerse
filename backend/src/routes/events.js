@@ -169,7 +169,7 @@ router.get("/:id/participants", requireAuth, (req, res) => {
 // club_admin only: create an event for their own club
 router.post("/", requireAuth, requireRole("club_admin"), (req, res) => {
   const {
-    title, description, event_date, end_date, venue, eligibility, max_participants,
+    title, description, event_date, end_date, start_time, end_time, venue, eligibility, max_participants,
     format_details, why_participate, contact_name, contact_role, contact_phone, contact_email, winners,
   } = req.body;
 
@@ -177,16 +177,21 @@ router.post("/", requireAuth, requireRole("club_admin"), (req, res) => {
     return res.status(400).json({ error: "title and event_date are required" });
   }
 
+  // Validate that end_time is after start_time if both are provided
+  if (start_time && end_time && start_time >= end_time) {
+    return res.status(400).json({ error: "End time must be after start time" });
+  }
+
   const info = db
     .prepare(
       `INSERT INTO events (
-        club_id, title, description, event_date, end_date, venue, eligibility, max_participants,
+        club_id, title, description, event_date, end_date, start_time, end_time, venue, eligibility, max_participants,
         format_details, why_participate, contact_name, contact_role, contact_phone, contact_email,
         winners, created_by
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
     .run(
-      req.user.club_id, title, description || null, event_date, end_date || null, venue || null,
+      req.user.club_id, title, description || null, event_date, end_date || null, start_time || null, end_time || null, venue || null,
       eligibility || null, max_participants || null, format_details || null, why_participate || null,
       contact_name || null, contact_role || null, contact_phone || null, contact_email || null,
       winners || null, req.user.id
@@ -204,7 +209,7 @@ router.patch("/:id", requireAuth, requireRole("club_admin", "dean"), (req, res) 
   }
 
   const {
-    title, description, event_date, end_date, venue, eligibility, max_participants,
+    title, description, event_date, end_date, start_time, end_time, venue, eligibility, max_participants,
     format_details, why_participate, contact_name, contact_role, contact_phone, contact_email, winners,
   } = req.body;
 
@@ -214,6 +219,8 @@ router.patch("/:id", requireAuth, requireRole("club_admin", "dean"), (req, res) 
       description = COALESCE(?, description),
       event_date = COALESCE(?, event_date),
       end_date = ?,
+      start_time = ?,
+      end_time = ?,
       venue = COALESCE(?, venue),
       eligibility = COALESCE(?, eligibility),
       max_participants = ?,
@@ -226,7 +233,7 @@ router.patch("/:id", requireAuth, requireRole("club_admin", "dean"), (req, res) 
       winners = COALESCE(?, winners)
      WHERE id = ?`
   ).run(
-    title, description, event_date, end_date, venue, eligibility, max_participants, format_details,
+    title, description, event_date, end_date, start_time, end_time, venue, eligibility, max_participants, format_details,
     why_participate, contact_name, contact_role, contact_phone, contact_email, winners, req.params.id
   );
 

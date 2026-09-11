@@ -7,6 +7,7 @@ import {
 import { api, SERVER_ROOT } from "../api";
 import { useAuth } from "../AuthContext";
 import { useToast } from "../ToastContext";
+import { formatTime } from "../utils/timeFormat";
 
 function bulletLines(text) {
   return (text || "").split("\n").map((l) => l.trim()).filter(Boolean);
@@ -83,6 +84,11 @@ export default function EventDetail() {
   const dateRange = event.end_date && event.end_date !== event.event_date
     ? `${event.event_date} – ${event.end_date}`
     : event.event_date;
+  
+  // Format time display
+  const startTime = formatTime(event.start_time);
+  const endTime = formatTime(event.end_time);
+  const timeDisplay = startTime ? (endTime ? `${startTime} - ${endTime}` : startTime) : null;
 
   return (
     <div style={{ maxWidth: 640, margin: "0 auto", padding: "24px 20px" }}>
@@ -108,6 +114,9 @@ export default function EventDetail() {
         <div style={{ padding: 24 }}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px", fontSize: 13, opacity: 0.75, marginBottom: 16 }}>
             <span style={{ display: "flex", alignItems: "center", gap: 5 }}><Calendar size={14} /> {dateRange}</span>
+            {timeDisplay && (
+              <span style={{ display: "flex", alignItems: "center", gap: 5 }}><Clock size={14} /> {timeDisplay}</span>
+            )}
             {event.venue && <span style={{ display: "flex", alignItems: "center", gap: 5 }}><MapPin size={14} /> {event.venue}</span>}
             <span style={{ display: "flex", alignItems: "center", gap: 5 }}><Users size={14} /> {event.attending} attending{event.max_participants ? ` · max ${event.max_participants}` : ""}</span>
             {event.avg_rating && <span style={{ display: "flex", alignItems: "center", gap: 5 }}><Star size={14} /> {event.avg_rating} ({event.review_count})</span>}
