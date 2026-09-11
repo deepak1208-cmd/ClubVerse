@@ -5,6 +5,7 @@ import { api } from "../api";
 import { useAuth } from "../AuthContext";
 import { EventGridSkeleton } from "../components/Skeletons";
 import EmptyState from "../components/EmptyState";
+import { formatDate, formatTime } from "../utils/timeFormat";
 
 export default function Feed() {
   const { user, loading: authLoading } = useAuth();
@@ -229,34 +230,48 @@ export default function Feed() {
               />
             ) : (
               <div className="events-grid">
-                {events.map((ev) => (
-                  <Link
-                    key={ev.id}
-                    to={`/events/${ev.id}`}
-                    className="event-card"
-                  >
-                    <div className="event-tag" style={{ background: `${ev.tag_color}15`, color: ev.tag_color }}>
-                      {ev.club_name}
-                    </div>
-                    <h3 className="event-title">{ev.title}</h3>
-                    <div className="event-meta">
-                      <span className="meta-item">
-                        <Calendar size={14} />
-                        {ev.event_date}
-                      </span>
-                      <span className="meta-item">
-                        <Users size={14} />
-                        {ev.attending} attending
-                      </span>
-                      {ev.avg_rating && (
+                {events.map((ev) => {
+                  // Calculate time display using the shared utility
+                  const startTime = formatTime(ev.start_time);
+                  const endTime = formatTime(ev.end_time);
+                  const timeDisplay = startTime ? (endTime ? `${startTime} - ${endTime}` : startTime) : null;
+
+                  return (
+                    <Link
+                      key={ev.id}
+                      to={`/events/${ev.id}`}
+                      className="event-card"
+                    >
+                      <div className="event-tag" style={{ background: `${ev.tag_color}15`, color: ev.tag_color }}>
+                        {ev.club_name}
+                      </div>
+                      <h3 className="event-title">{ev.title}</h3>
+                      <div className="event-meta">
+                        {/* Date & Time Row */}
                         <span className="meta-item">
-                          <Star size={14} />
-                          {ev.avg_rating}
+                          <Calendar size={14} />
+                          {formatDate(ev.event_date)}
+                          {timeDisplay && (
+                            <>
+                              <span style={{ color: '#cbd5e1', margin: '0 6px' }}>•</span>
+                              {timeDisplay}
+                            </>
+                          )}
                         </span>
-                      )}
-                    </div>
-                  </Link>
-                ))}
+                        <span className="meta-item">
+                          <Users size={14} />
+                          {ev.attending} attending
+                        </span>
+                        {ev.avg_rating && (
+                          <span className="meta-item">
+                            <Star size={14} />
+                            {ev.avg_rating}
+                          </span>
+                        )}
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>
