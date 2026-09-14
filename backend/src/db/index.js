@@ -183,6 +183,29 @@ CREATE TABLE IF NOT EXISTS reviews (
   FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- Team-based registration tables
+CREATE TABLE IF NOT EXISTS event_teams (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  event_id INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  captain_user_id INTEGER NOT NULL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  withdrawn_at TEXT,
+  UNIQUE(event_id, name),
+  FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+  FOREIGN KEY (captain_user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS event_team_members (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  team_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  joined_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(team_id, user_id),
+  FOREIGN KEY (team_id) REFERENCES event_teams(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
 `;
 
 const COMMITTEES_SEED = [
@@ -230,6 +253,10 @@ const NEW_EVENT_COLUMNS = [
   "contact_email TEXT",
   "start_time TEXT",
   "end_time TEXT",
+  "registration_type TEXT DEFAULT 'individual'",
+  "max_teams INTEGER",
+  "min_team_size INTEGER",
+  "max_team_size INTEGER",
 ];
 
 function migrateExistingEventsTable() {
