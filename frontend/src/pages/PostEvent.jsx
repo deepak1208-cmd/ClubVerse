@@ -65,12 +65,8 @@ export default function PostEvent() {
     try {
       let mediaUrl = null;
 
-      // Upload media if exists
+      // Upload media if exists via backend API
       if (mediaFile) {
-        const fileExt = mediaFile.name.split(".").pop();
-        const fileName = `${Date.now()}.${fileExt}`;
-        
-        // Use the backend API for media upload via FormData
         const formDataUpload = new FormData();
         formDataUpload.append("files", mediaFile);
         
@@ -85,7 +81,7 @@ export default function PostEvent() {
         });
         const uploadData = await res.json();
         if (!res.ok) throw new Error(uploadData.error || "Upload failed");
-        mediaUrl = uploadData.path || uploadData.url || fileName;
+        mediaUrl = uploadData.path || uploadData.url;
       }
 
       // Insert event into database via API
@@ -103,7 +99,7 @@ export default function PostEvent() {
         media_url: mediaUrl,
       };
       
-      const result = await api.createEvent(payload);
+      await api.createEvent(payload);
 
       alert("Event posted successfully!");
       navigate("/dashboard");
