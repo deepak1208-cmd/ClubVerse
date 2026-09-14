@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabaseClient";
 import { useAuth } from "../AuthContext";
+import { api } from "../api";
 import { Calendar, Clock, MapPin, Users, Image as ImageIcon, X } from "lucide-react";
 
 export default function PostEvent() {
@@ -69,36 +69,41 @@ export default function PostEvent() {
       if (mediaFile) {
         const fileExt = mediaFile.name.split(".").pop();
         const fileName = `${Date.now()}.${fileExt}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("event-media")
-          .upload(fileName, mediaFile);
-
-        if (uploadError) throw uploadError;
-        mediaUrl = uploadData.path;
+        
+        // Use the backend API for media upload via FormData
+        const formDataUpload = new FormData();
+        formDataUpload.append("files", mediaFile);
+        
+        const token = localStorage.getItem("clubverse_token");
+        const headers = {};
+        if (token) headers.Authorization = `Bearer ${token}`;
+        
+        const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:4000/api"}/upload`, {
+          method: "POST",
+          headers,
+          body: formDataUpload,
+        });
+        const uploadData = await res.json();
+        if (!res.ok) throw new Error(uploadData.error || "Upload failed");
+        mediaUrl = uploadData.path || uploadData.url || fileName;
       }
 
-      // Insert event into database
-      const { data, error: insertError } = await supabase
-        .from("events")
-        .insert([
-          {
-            title: formData.title,
-            club: formData.club,
-            date: formData.date,
-            start_time: formData.startTime || null,
-            end_time: formData.endTime || null,
-            venue: formData.venue,
-            description: formData.description,
-            eligibility: formData.eligibility,
-            max_participants: formData.maxParticipants ? parseInt(formData.maxParticipants) : null,
-            is_multi_day: formData.isMultiDay,
-            media_url: mediaUrl,
-            posted_by: user.id,
-            created_at: new Date().toISOString(),
-          },
-        ]);
-
-      if (insertError) throw insertError;
+      // Insert event into database via API
+      const payload = {
+        title: formData.title,
+        club: formData.club,
+        date: formData.date,
+        start_time: formData.startTime || null,
+        end_time: formData.endTime || null,
+        venue: formData.venue,
+        description: formData.description,
+        eligibility: formData.eligibility,
+        max_participants: formData.maxParticipants ? parseInt(formData.maxParticipants) : null,
+        is_multi_day: formData.isMultiDay,
+        media_url: mediaUrl,
+      };
+      
+      const result = await api.createEvent(payload);
 
       alert("Event posted successfully!");
       navigate("/dashboard");
